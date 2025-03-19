@@ -1,8 +1,6 @@
 pipeline {
     agent any
-    environment {
-        EMAIL = 'xr045jss@gmail.com'
-    }
+    
     triggers {
         githubPush() 
     }
@@ -19,7 +17,7 @@ pipeline {
             post {
                 always {
                     emailext subject: "Test Stage Result: ${currentBuild.currentResult}",
-                             to: "${env.EMAIL}",
+                             to: "xr045jss@gmail.com",
                              attachLog: true,
                              body: "Test stage completed with status: ${currentBuild.currentResult}"
                 }
