@@ -1,61 +1,34 @@
 pipeline {
     agent any
-    
-    triggers {
-        githubPush() 
-    }
     stages {
-        stage('Build') {
+        stage('Send Email Manually') {
             steps {
-                echo 'Build stage: Build stage is running.'
-            }
-        }
-        stage('Unit and Integration Tests') {
-            steps {
-                echo 'Test stage: Simulating unit and integration tests...'
-            }
-            post {
-                always {
-                    emailext subject: "Test Stage Result: ${currentBuild.currentResult}",
-                             to: "xr045jss@gmail.com",
-                             attachLog: true,
-                             body: "Test stage completed with status: ${currentBuild.currentResult}"
+                script {
+                    def props = new Properties()
+                    props.put("mail.smtp.host", "smtp.gmail.com")
+                    props.put("mail.smtp.port", "465")
+                    props.put("mail.smtp.auth", "true")
+                    props.put("mail.smtp.socketFactory.port", "465")
+                    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
+
+                    def session = Session.getInstance(props,
+                        new javax.mail.Authenticator() {
+                            protected PasswordAuthentication getPasswordAuthentication() {
+                                return new PasswordAuthentication("xr045jss@gmail.com", "wwmifcolcxwgnylm")
+                            }
+                        }
+                    )
+
+                    def message = new MimeMessage(session)
+                    message.setFrom(new InternetAddress("xr045jss@gmail.com"))
+                    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("simranpreetkaur23105@gmail.com"))
+                    message.setSubject("Groovy Mail from Jenkins")
+                    message.setText("This is a manual email sent from a Jenkins pipeline using Groovy!")
+
+                    Transport.send(message)
+                    echo "Email sent successfully via Groovy SMTP"
                 }
-            }
-        }
-        stage('Code Analysis') {
-            steps {
-                echo 'Code Analysis stage: Simulating code quality analysis...'
-            }
-        }
-        stage('Security Scan') {
-            steps {
-                echo 'Security Scan stage: Simulating security scan...'
-            }
-            post {
-                always {
-                    emailext subject: "Security Scan Result: ${currentBuild.currentResult}",
-                             to: "${env.EMAIL}",
-                             attachLog: true,
-                             body: "Security scan completed with status: ${currentBuild.currentResult}"
-                }
-            }
-        }
-        stage('Deploy to Staging') {
-            steps {
-                echo 'Deploy to Staging stage: Simulating deployment to staging...'
-            }
-        }
-        stage('Integration Tests on Staging') {
-            steps {
-                echo 'Integration Tests on Staging: Simulating integration tests...'
-            }
-        }
-        stage('Deploy to Production') {
-            steps {
-                echo 'Deploy to Production: Simulating deployment to production...'
             }
         }
     }
 }
-
