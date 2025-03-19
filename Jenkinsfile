@@ -4,6 +4,11 @@ pipeline {
         stage('Send Email Manually') {
             steps {
                 script {
+                    // Required imports
+                    import javax.mail.*
+                    import javax.mail.internet.*
+                    import java.util.Properties
+
                     def props = new Properties()
                     props.put("mail.smtp.host", "smtp.gmail.com")
                     props.put("mail.smtp.port", "465")
@@ -12,7 +17,7 @@ pipeline {
                     props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory")
 
                     def session = Session.getInstance(props,
-                        new javax.mail.Authenticator() {
+                        new Authenticator() {
                             protected PasswordAuthentication getPasswordAuthentication() {
                                 return new PasswordAuthentication("xr045jss@gmail.com", "wwmifcolcxwgnylm")
                             }
